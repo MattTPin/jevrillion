@@ -350,8 +350,14 @@
   animation: answer-in 0.22s ease-out;
 }
 .answer-feedback.obscure {
-  border-color: #748841;
-  background: linear-gradient(100deg, #303c20, #202b17);
+  color: #ffe082;
+  border-color: #d7ae48;
+  background: linear-gradient(110deg, #55451f, #342c19);
+  box-shadow: 0 0 22px #f7c94826;
+}
+.answer-feedback.obscure .feedback-points strong {
+  color: #ffe789;
+  text-shadow: 0 0 12px #ffcf5e88;
 }
 .answer-feedback.uncommon {
   background: #1d2530;

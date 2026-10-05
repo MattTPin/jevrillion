@@ -244,9 +244,10 @@ export function DevPage({
             <p className="field-hint mt-3">{config.region.prompt}</p>
           </details>
           <p className="field-hint mt-6">
-            The highest-probability scoring choice must exceed{' '}
-            {config.scoring.confidenceThreshold}%. Overall decision confidence
-            is diagnostic only.
+            The combined Common, Uncommon, and Obscure probability must exceed{' '}
+            {config.scoring.confidenceThreshold}%. Close calls can step up one
+            tier within {config.scoring.bonusStepUpMargin} percentage points.
+            Overall decision confidence is diagnostic only.
           </p>
         </aside>
       </div>

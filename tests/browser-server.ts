@@ -4,7 +4,7 @@ import { createApp } from '../server/app.ts'
 import { projectRoot, readConfig } from '../server/config.ts'
 import { readSettings } from '../server/settings.ts'
 import { AppError } from '../server/errors.ts'
-import { evaluation } from './fixtures.ts'
+import { evaluation, evaluationWithProbabilities } from './fixtures.ts'
 
 // Isolated test-only data and judge. Production never imports this file.
 const directory = resolve(projectRoot, '.test-data')
@@ -19,6 +19,7 @@ const config = readConfig({
   ...settings,
   DEV_MODE: 'true',
   ROUND_SECONDS: 150,
+  BONUS_STEP_UP_MARGIN: 7,
   BACKEND_PORT: process.env.E2E_API_PORT ?? settings.BACKEND_PORT ?? 3001,
 })
 const { app } = createApp(config, {
@@ -38,6 +39,11 @@ const { app } = createApp(config, {
       throw new AppError(503, 'provider_unavailable', 'Provider unavailable.')
     if (answer === 'slow fruit')
       await new Promise((resolve) => setTimeout(resolve, 1600))
+    if (answer === 'bonus fruit')
+      return evaluationWithProbabilities(
+        { common: 50, uncommon: 43, obscure: 5, not: 2 },
+        config.publicConfig.scoring,
+      )
     const choice =
       answer === 'wrench' ||
       question.criteria.not === 'Reject all test candidates.'
@@ -47,7 +53,7 @@ const { app } = createApp(config, {
           : answer === 'miracle fruit'
             ? 'obscure'
             : 'common'
-    const result = evaluation(choice, answer === 'maybe' ? 40 : 99)
+    const result = evaluation(choice, answer === 'maybe' ? 40 : 99, config.publicConfig.scoring)
     return answer === 'strawbery'
       ? { ...result, suggestedAnswer: 'strawberry' }
       : result

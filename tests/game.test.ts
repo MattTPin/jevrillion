@@ -199,7 +199,7 @@ test('errors and low-confidence/invalid answers score zero without ending round'
     if (answer === 'error') throw new Error('provider failed')
     return evaluation(
       answer === 'invalid' ? 'not' : 'common',
-      answer === 'low' ? 90 : 99,
+      answer === 'low' ? 40 : 99,
     )
   })
   game.submit('error')

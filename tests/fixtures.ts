@@ -1,6 +1,8 @@
+import { OBSCURITY_CHOICES } from '../src/types/index.ts'
 import type {
   Attempt,
   Evaluation,
+  JevDecision,
   ObscurityChoice,
   QuestionDefinition,
   ScoringSettings,
@@ -21,6 +23,7 @@ export const question: QuestionDefinition = {
 }
 export const scoring: ScoringSettings = {
   confidenceThreshold: 90,
+  bonusStepUpMargin: 7,
   points: { common: 10, uncommon: 20, obscure: 50 },
 }
 export function evaluation(
@@ -28,22 +31,36 @@ export function evaluation(
   probability = 99,
   settings = scoring,
 ): Evaluation {
-  const remainder = (100 - probability) / 300
-  const probabilities = {
-    common: remainder,
-    uncommon: remainder,
-    obscure: remainder,
-    not: remainder,
-    [choice]: probability / 100,
-  }
+  const remainder = (100 - probability) / 3
+  return evaluationWithProbabilities(
+    {
+      common: remainder,
+      uncommon: remainder,
+      obscure: remainder,
+      not: remainder,
+      [choice]: probability,
+    },
+    settings,
+  )
+}
+export function evaluationWithProbabilities(
+  probabilities: JevDecision['probabilities'],
+  settings = scoring,
+): Evaluation {
+  const choice = OBSCURITY_CHOICES.reduce((winner, option) =>
+    probabilities[option] > probabilities[winner] ? option : winner,
+  )
+  const fractions = Object.fromEntries(
+    OBSCURITY_CHOICES.map((option) => [option, probabilities[option] / 100]),
+  )
   const decision = parseDecision({
     model: 'test-jev',
     answers: {
-      obscurity: { type: 'choice', choice, confidence: 0.5, probabilities },
+      obscurity: { type: 'choice', choice, confidence: 0.5, probabilities: fractions },
     },
   })
   return {
-    version: 2,
+    version: 3,
     decision,
     scoring: settings,
     region: 'western',

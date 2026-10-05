@@ -4,6 +4,7 @@ const path = new URL('../settings.json', import.meta.url)
 const keys = [
   'VITE_DEFAULT_JEV_MODEL',
   'CONFIDENCE_THRESHOLD',
+  'BONUS_STEP_UP_MARGIN',
   'DUPLICATE_SIMILARITY_THRESHOLD',
   'REGION',
   'ROUND_SECONDS',

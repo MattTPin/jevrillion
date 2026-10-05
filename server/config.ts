@@ -34,10 +34,11 @@ export function readConfig(
   }
   const scoring = validateScoringSettings({
     confidenceThreshold: numeric('CONFIDENCE_THRESHOLD', '90'),
+    bonusStepUpMargin: numeric('BONUS_STEP_UP_MARGIN', '7'),
     points: {
       common: numeric('COMMON_POINTS', '10'),
       uncommon: numeric('UNCOMMON_POINTS', '20'),
-      obscure: numeric('OBSCURE_POINTS', '50'),
+      obscure: numeric('OBSCURE_POINTS', '40'),
     },
   })
   const roundSeconds = validateRoundSeconds(numeric('ROUND_SECONDS', '90'))

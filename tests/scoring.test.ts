@@ -21,7 +21,7 @@ test('four-choice probabilities determine rarity independently of overall confid
     ['not', 0],
   ] as const) {
     assert.equal(evaluation(choice).score.points, points)
-    assert.equal(evaluation(choice, 90).score.points, 0)
+    assert.equal(evaluation(choice, 90).score.points, points)
     assert.equal(evaluation(choice, 90.01).score.points, points)
   }
   assert.equal(evaluation('common', 40).score.reason, 'low-confidence')
@@ -157,7 +157,7 @@ test('saved scores use scoring snapshots and preserve legacy retry records', () 
   const saved = parseSavedEvaluation(legacy)
   assert.equal(saved.score.points, 50)
   assert.equal(saved.decision.raw.answer.choice, 'valid')
-  assert.throws(() => parseSavedEvaluation({ ...current, version: 3 }))
+  assert.throws(() => parseSavedEvaluation({ ...current, version: 4 }))
 })
 
 test('OpenRouter uses one region-aware choice and applies configured scores', async (t) => {

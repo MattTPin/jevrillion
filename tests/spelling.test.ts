@@ -47,7 +47,7 @@ test('resolver always prefers scoring original, then scoring correction, then fa
     acceptedAnswer: 'strawberry',
   })
   assert.equal(
-    resolveEvaluation(failed, evaluation('common', 90), 'strawberry'),
+    resolveEvaluation(failed, evaluation('common', 40), 'strawberry'),
     failed,
   )
   assert.equal(resolveEvaluation(failed), failed)

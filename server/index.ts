@@ -24,7 +24,7 @@ try {
   // Only our validation messages, never settings values or upstream errors.
   if (
     error instanceof Error &&
-    /^(Scoring|CONFIDENCE_THRESHOLD|DUPLICATE_SIMILARITY_THRESHOLD|COMMON_POINTS|UNCOMMON_POINTS|OBSCURE_POINTS|ROUND_SECONDS|REGION|Region|DEV_MODE|BACKEND_PORT|VITE_DEFAULT_JEV_MODEL|settings\.json|Question|A question|Provide |Displayed question|Instructions|common criteria|uncommon criteria|obscure criteria|not criteria)/.test(
+    /^(Scoring|CONFIDENCE_THRESHOLD|BONUS_STEP_UP_MARGIN|DUPLICATE_SIMILARITY_THRESHOLD|COMMON_POINTS|UNCOMMON_POINTS|OBSCURE_POINTS|ROUND_SECONDS|REGION|Region|DEV_MODE|BACKEND_PORT|VITE_DEFAULT_JEV_MODEL|settings\.json|Question|A question|Provide |Displayed question|Instructions|common criteria|uncommon criteria|obscure criteria|not criteria)/.test(
       error.message,
     )
   )

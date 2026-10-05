@@ -48,6 +48,56 @@ async function questionOnly(page: Page, questionId = 'f6a91c2e') {
   await expect(page.getByRole('button', { name: 'Let’s play' })).toBeEnabled()
 }
 
+test('Dev explains step-up and gameplay awards and persists the same bonus', async ({
+  page,
+}) => {
+  await connect(page)
+  await questionOnly(page)
+  await page.getByRole('button', { name: 'Dev', exact: true }).click()
+  await page.getByLabel('Candidate answer', { exact: true }).fill('bonus fruit')
+  await page.getByRole('button', { name: 'Test answer', exact: true }).click()
+  await expect(page.locator('.test-score strong')).toHaveText('Uncommon')
+  await expect(page.locator('.test-score span')).toHaveText('+20 points')
+  await expect(page.locator('.test-result [role="status"]')).toContainText(
+    'Step-up threshold rule triggered: Common → Uncommon.',
+  )
+  await expect(page.locator('.test-result [role="status"]')).toContainText(
+    'Probability gap 7 percentage points',
+  )
+  await expect(page.locator('.test-result pre')).toContainText('"choice": "common"')
+  await page.getByLabel('Candidate answer', { exact: true }).fill('apple')
+  await page.getByRole('button', { name: 'Test answer', exact: true }).click()
+  await expect(page.locator('.test-score strong')).toHaveText('Common')
+  await expect(page.locator('.test-result [role="status"]')).toHaveCount(0)
+
+  await page.getByRole('button', { name: 'Play', exact: true }).click()
+  await page.clock.install()
+  await page.getByRole('button', { name: 'Start', exact: true }).click()
+  await page.getByRole('textbox', { name: 'Your answer', exact: true })
+    .fill('bonus fruit')
+  await page.getByRole('button', { name: 'Submit', exact: true }).click()
+  await expect(page.locator('.total-score strong')).toHaveText('20')
+  await expect(page.locator('.feedback-points strong')).toHaveText('Uncommon')
+  await page.clock.fastForward(150_000)
+  await expect(page.getByText('Score saved', { exact: true })).toBeVisible()
+  const saved = await page.evaluate(async () => {
+    const profile = JSON.parse(localStorage.getItem('jevrillion.player.v1')!)
+    const records = await (await fetch(
+      '/api/leaderboards?playerId=' + profile.uuid,
+    )).json()
+    return records[0]
+  })
+  expect(saved.totalScore).toBe(20)
+  expect(saved.answers[0].evaluation.version).toBe(3)
+  expect(saved.answers[0].evaluation.scoring.bonusStepUpMargin).toBe(7)
+  expect(saved.answers[0].evaluation.score.stepUp).toEqual({
+    from: 'common', probabilityGap: 7,
+  })
+  await page.reload()
+  await page.getByRole('button', { name: 'Leaderboard', exact: true }).click()
+  await expect(page.getByRole('cell', { name: '20 points' })).toBeVisible()
+})
+
 test('Connect lists Jev models and sends the selected version to gameplay', async ({
   page,
 }) => {

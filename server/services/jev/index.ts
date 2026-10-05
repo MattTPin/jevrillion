@@ -33,7 +33,7 @@ export function createJudge(config: ServerConfig) {
     )
     const scoring = config.publicConfig.scoring
     const evaluate = (decision: typeof decisions.original): Evaluation => ({
-      version: 2,
+      version: 3,
       decision,
       scoring,
       region: config.publicConfig.region.id,

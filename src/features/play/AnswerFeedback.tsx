@@ -37,7 +37,7 @@ export function AnswerFeedback({ answer }: { answer: SubmittedAnswer }) {
             : answer.status === 'error'
               ? 'Request failed. Keep going!'
               : score?.reason === 'low-confidence'
-                ? `No scoring choice above ${answer.evaluation?.scoring.confidenceThreshold}% · no points`
+                ? `Category match at or below ${answer.evaluation?.scoring.confidenceThreshold}% · no points`
                 : score?.reason === 'invalid'
                   ? 'Outside this category · no points'
                   : answer.status === 'pending'

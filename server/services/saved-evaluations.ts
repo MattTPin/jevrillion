@@ -15,7 +15,7 @@ import {
 } from '../../src/services/scoring.ts'
 import { parseDecision } from './jev/shared.ts'
 
-// Snapshots keep historical points intact when the active environment changes.
+// Snapshots keep historical points intact when the active settings or scoring rules change.
 export function parseSavedEvaluation(
   value: unknown,
 ): Evaluation | LegacyEvaluation {
@@ -26,13 +26,14 @@ export function parseSavedEvaluation(
   )
     throw new Error('Malformed saved evaluation.')
   const raw = value.decision.raw
-  if (value.version === 2) {
+  if (value.version === 2 || value.version === 3) {
     if (!isObject(value.scoring) || !isObject(value.scoring.points))
       throw new Error('Missing scoring snapshot.')
     const settings = value.scoring
     const points = value.scoring.points
     if (
       typeof settings.confidenceThreshold !== 'number' ||
+      (value.version === 3 && typeof settings.bonusStepUpMargin !== 'number') ||
       typeof points.common !== 'number' ||
       typeof points.uncommon !== 'number' ||
       typeof points.obscure !== 'number'
@@ -40,6 +41,9 @@ export function parseSavedEvaluation(
       throw new Error('Invalid scoring snapshot.')
     const scoring: ScoringSettings = validateScoringSettings({
       confidenceThreshold: settings.confidenceThreshold,
+      // Old snapshots predate bonuses; preserve their single-label scoring.
+      bonusStepUpMargin:
+        value.version === 3 ? Number(settings.bonusStepUpMargin) : 0,
       points: {
         common: points.common,
         uncommon: points.uncommon,
@@ -64,11 +68,11 @@ export function parseSavedEvaluation(
     if (suggestedAnswer && answerError(suggestedAnswer))
       throw new Error('Invalid suggested answer.')
     return {
-      version: 2,
+      version: value.version,
       decision,
       scoring,
       region,
-      score: scoreDecision(decision, scoring),
+      score: scoreDecision(decision, scoring, value.version),
       ...(acceptedAnswer ? { acceptedAnswer } : {}),
       ...(suggestedAnswer ? { suggestedAnswer } : {}),
     }

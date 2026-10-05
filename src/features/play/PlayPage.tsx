@@ -127,9 +127,6 @@ export function PlayPage({
               )}
               <span className="hero-meta">
                 <Clock3 size={13} /> {formatTime(config.roundSeconds)} per round{' '}
-                <span>·</span>
-                <Layers3 size={13} /> {remaining} fresh{' '}
-                {remaining === 1 ? 'category' : 'categories'}
               </span>
             </div>
           </section>
@@ -157,11 +154,6 @@ export function PlayPage({
               </p>
             </div>
           </div>
-          <p className="game-footnote">
-            Jev judges obscurity for the {config.region.id} region. A scoring
-            choice must be above {config.scoring.confidenceThreshold}%
-            probability.
-          </p>
         </>
       ) : (
         <>

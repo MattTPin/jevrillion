@@ -4,6 +4,7 @@ export type ScoringChoice = (typeof SCORING_CHOICES)[number]
 export type ObscurityChoice = (typeof OBSCURITY_CHOICES)[number]
 export interface ScoringSettings {
   confidenceThreshold: number
+  bonusStepUpMargin: number // Percentage points; zero disables tier promotion.
   points: Record<ScoringChoice, number>
 }
 
@@ -52,10 +53,11 @@ export interface ScoreResult {
   label: Rarity | null
   points: number
   reason: 'scored' | 'invalid' | 'low-confidence'
+  stepUp?: { from: ScoringChoice; probabilityGap: number }
 }
 
 export interface Evaluation {
-  version: 2
+  version: 2 | 3 // V2 history retains the previous single-label threshold.
   decision: JevDecision
   score: ScoreResult
   scoring: ScoringSettings
